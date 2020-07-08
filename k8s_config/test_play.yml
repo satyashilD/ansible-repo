@@ -1,0 +1,7 @@
+---
+- hosts: worker1, worker2
+  connection: ssh
+  tasks:
+     - name: print ip
+       shell: hostname
+

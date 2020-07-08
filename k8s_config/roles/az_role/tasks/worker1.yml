@@ -1,0 +1,32 @@
+
+- name: Create Worker1 public ip
+  azure_rm_publicipaddress:
+    resource_group: az_k8s_cluster
+    allocation_method: Static
+    name: worker1publicip001
+
+- name: Create Worker1 NIC
+  azure_rm_networkinterface:
+    resource_group: az_k8s_cluster
+    name: worker1nic001
+    virtual_network: mastervn001
+    subnet: workersubnet001
+    public_ip_name: worker1publicip001
+    security_group: secgroup001
+
+- name: Create worker1 virtual machine
+  azure_rm_virtualmachine:
+    resource_group: az_k8s_cluster
+    name: worker1
+    vm_size: Standard_B2s
+    storage_account: k8azstorage
+    storage_container: worker1vm001
+    storage_blob: worker1vm001.vhd
+    admin_username: azureuser
+    admin_password: Password1234!
+    network_interfaces: worker1nic001
+    image:
+      offer: CentOS
+      publisher: OpenLogic
+      sku: '7.5'
+      version: latest
