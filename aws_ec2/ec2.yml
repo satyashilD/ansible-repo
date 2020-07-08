@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  become: false
+  connection: local
+  tasks:
+     - name: example ec2 group
+       ec2_group:
+          name: ansi-sg
+          description: SG for apache
+          vpc_id: "{{ vpc_id }}"
+          region: "{{ region }}"
+          rules:
+            - proto: tcp
+              from_port: 80
+              to_port: 80
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              from_port: 22
+              to_port: 22
+              cidr_ip: 10.0.0.0/8
+            - proto: tcp
+              from_port: 443
+              to_port: 443
+       register: sg
+     - ec2:
+         key_name: "{{ key_pair }}"
+         instance_type: "{{ instance_type }}"
+         group_id:  "{{ sg.group_id }}"
+         region: "{{ region }}"
+         image: "{{ ami_id }}"
+         wait: yes
+         count: "{{ count }}"
+         vpc_subnet_id: "{{ subnet_id }}"
+         assign_public_ip: yes
+         instance_tags:
+           Name: webserver
+         user_data: "{{ lookup('file', 'files/user_data.sh') }}"
