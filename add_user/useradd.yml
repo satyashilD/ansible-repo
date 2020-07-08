@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  gather_facts: no
+  become: true
+  connection: local
+  vars:
+    service_user:
+    - serv1
+    - serv2
+    user:
+    - user1
+    - user2
+    
+  tasks:
+     - name: "Create user accounts and add users to groups"
+       user:
+          name: "{{ item }}"
+          groups: "admin,www-data"
+          uid: 9998
+       with_items: "{{ service_user }}"
+
+    - name: "Create user accounts and add users to groups"
+       user:
+          name: "{{ item }}"
+          groups: "admin,www-data"
+          uid: 7777
+       with_items: "{{ user }}"
+
+    - name: Create a 2048-bit SSH key for user jsmith in ~jsmith/.ssh/id_rsa
+      user:
+          name: "{{ item }}"
+          generate_ssh_key: yes
+          ssh_key_bits: 2048
+          ssh_key_file: files/"{{ item }}"
+      with_items: "{{ user }}"
+
+    - name: "Add authorized keys"
+      authorized_key:
+         user: "{{ item }}"
+         key: "{{ lookup('file', 'files/'+ item + '.key.pub') }}"
+      with_items: "{{ user }}"
