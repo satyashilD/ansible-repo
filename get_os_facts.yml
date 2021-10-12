@@ -1,0 +1,28 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: false
+  tasks:
+     - name: Distribution
+       debug: msg="{{ ansible_distribution }}"
+     - name: Distribution version
+       debug: msg="{{ ansible_distribution_version}}"
+     - name: Distribution major version
+       debug: msg="{{ ansible_distribution_major_version }}"
+     - name: Print host ip
+       #debug: msg="{{ hostvars[inventory_hostname]['ansible_default_ipv4'] }}"
+       #debug: msg="{{inventory_hostname}}"
+       debug: msg="{{ ansible_ssh_host }}"
+     - name: Fetch  openssl version
+       shell:  openssl version
+       register: openssl_version
+     - name: Dump  openssl version
+       debug: msg="{{ openssl_version.stdout }}"
+     - name: Create os dump file if not available
+       file:
+         path: /tmp/os_version_details.csv
+         state: touch
+         mode: u+rw,g-wx,o-rwx
+     - name: Dump information to local file
+       shell: chmod 777 /tmp/os_version_details.csv && echo "{{ ansible_ssh_host }},{{ ansible_distribution }},{{ ansible_distribution_version}},{{ openssl_version.stdout }}" >> /tmp/os_version_details.csv
+       
