@@ -1,8 +1,8 @@
 key_pair: "my_cloud_key"
 instance_type: "t2.micro"
-ami_id: "ami-098f16afa9edf40be"
+ami_id: "ami-XXX"
 count: "1"
 subnet_id: "subnet-8e251213a0"
 region: "us-east-1"
-vpc_id: "vpc-b3348bc9"
+vpc_id: "vpc-XXX"
 
